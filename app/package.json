@@ -1,0 +1,7 @@
+{
+    "private": true,
+    "scripts": {
+        "dotnet:publish": "dotnet publish --configuration Release --runtime win-x64 --self-contained true",
+        "dotnet:run": "dotnet run"
+    }
+}

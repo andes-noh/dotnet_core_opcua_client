@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "redvanworkshop.explorer-exclude-vscode-extension",
+        "editorconfig.editorconfig",
+        "ms-dotnettools.csharp",
+        "leo-labs.dotnet",
+        "spencer-farley.xunitsnippets",
+        "redhat.vscode-xml",
+        "patcx.vscode-nuget-gallery",
+    ]
+}

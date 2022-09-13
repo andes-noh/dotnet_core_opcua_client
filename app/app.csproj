@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Title>dotnet basic sample</Title>
+        <Description>dotnet 샘플 프로젝트</Description>
+        <Version>1.0.0</Version>
+        <Authors>Andes Noh</Authors>
+    </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>exe</OutputType>
+        <Platform>x64</Platform>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <Configuration>Debug</Configuration>
+    </PropertyGroup>
+    <PropertyGroup>
+        <PublishDir>./dist</PublishDir>
+        <!-- <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
+        <PublishSingleFile>true</PublishSingleFile>
+        <PublishTrimmed>true</PublishTrimmed>
+        <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
+        <DebuggerSupport>false</DebuggerSupport>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="dotenv.net" Version="3.1.1" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.370.12" />
+    </ItemGroup>
+</Project>

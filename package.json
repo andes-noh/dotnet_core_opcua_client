@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "scripts": {
+        "dotnet:build": "dotnet build",
+        "dotnet:clean": "dotnet clean",
+        "dotnet:restore": "dotnet restore",
+        "dotnet:test": "dotnet test"
+    }
+}
