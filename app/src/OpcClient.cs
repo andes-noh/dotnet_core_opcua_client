@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading;
 
 using Opc.Ua;
 using Opc.Ua.Client;
@@ -137,7 +136,7 @@ public class OpcUaClient
         }
 
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(config);
-        EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(endpointURL, false);
+        EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(endpointURL, false /*UseSecurity*/);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
         session = await Session.Create(config, endpoint, false, false, "OPC UA CLIENT", 60000, UserIdentity, null);
