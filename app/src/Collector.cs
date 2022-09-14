@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Opc.Ua;
 using Client;
+using System.Security.Cryptography.X509Certificates;
 
 public class Collector : BackgroundService
 {
@@ -43,9 +44,18 @@ public class Collector : BackgroundService
                 {
                     try
                     {
+                        // 인증 관련 id, password 설정
                         opcUaClient.UserIdentity = new UserIdentity("OpcUaClient", "12345678");
+
+                        // Anonymous 연결 설정
+                        // new UserIdentity( new AnonymousIdentityToken( ) );
+
+                        // 인증서 연결 설정
+                        // X509Certificate2 certificate = new X509Certificate2("", "", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+                        // new UserIdentity(certificate);
+
                         opcUaClient.ConnectServer(endpoint);
-                        Thread.Sleep(10000);
+                        Thread.Sleep(5000);
                     }
                     catch (Exception e)
                     {
@@ -70,6 +80,12 @@ public class Collector : BackgroundService
                 }
                 else
                 {
+                    // single collection
+                    // NodeId nodeId = new NodeId("ns=2;s=/Channel/ProgramInfo/progName");
+                    // DataValue dv = opcUaClient.ReadValue(nodeId);
+                    // Console.WriteLine($"single data: " + dv.ToString());
+
+                    // multi collection
                     List<NodeId> nodeIds = new List<NodeId>();
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/State/acProg"));
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/ProgramInfo/progName"));
@@ -77,7 +93,6 @@ public class Collector : BackgroundService
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/Spindle/actSpeed"));
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/Spindle/speedOvr"));
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/MachineAxis/feedRateOvr"));
-                    nodeIds.Add(new NodeId("ns=2;s=/Channel/State/acProg"));
 
                     List<DataValue> dataValues = opcUaClient.ReadValues(nodeIds.ToArray());
 
@@ -100,12 +115,11 @@ public class Collector : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // 생성자
         opcUaClient = new OpcUaClient();
-        Console.WriteLine(_props.endpointURL);
         Task.Run(() => DataCollector(stoppingToken, _props.endpointURL));
         return Task.CompletedTask;
     }
-
 
     // BackgroundService는 생략가능
     public override Task StopAsync(CancellationToken cancellationToken)
