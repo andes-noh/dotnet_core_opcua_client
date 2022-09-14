@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Title>dotnet basic sample</Title>
-        <Description>dotnet 샘플 프로젝트</Description>
+        <Title>dotnet opcua client</Title>
+        <Description>dotnet opcua 클라이언트 프로그램</Description>
         <Version>1.0.0</Version>
         <Authors>Andes Noh</Authors>
     </PropertyGroup>
