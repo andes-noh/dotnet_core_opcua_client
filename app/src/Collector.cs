@@ -107,7 +107,9 @@ public class Collector : BackgroundService
             }
             catch (Exception)
             {
-                Console.WriteLine("Failed to read value");
+                opcUaClient.Disconnect();
+                opcUaClient.setConnected(false);
+                Console.WriteLine("Failed to read value or error connecting to server");
             }
             // Console.WriteLine($"Sample Project: {text}");
         }
@@ -125,6 +127,7 @@ public class Collector : BackgroundService
     public override Task StopAsync(CancellationToken cancellationToken)
     {
         opcUaClient.Disconnect();
+        opcUaClient.setConnected(false);
         return Task.CompletedTask;
     }
 }
