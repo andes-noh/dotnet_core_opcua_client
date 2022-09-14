@@ -1,11 +1,46 @@
-# dotnet-basic
+# dotnet-opcua-client
 
 .NET Template standalone Project
 
-Collector
+## Collector
 
--   BackgroundService로 동작
--   .env TEXT 내용 출력
+-   opcua 연결
+    -   Configuration(User 인증) -> Create Session -> Read Value
+    ***
+-   데이터 수집
+
+    -   single
+
+    ```
+        // progName
+        NodeId nodeId = new NodeId("ns=2;s=/Channel/ProgramInfo/progName");
+        DataValue dv = opcUaClient.ReadValue(nodeId);
+
+        // 수집 데이터 출력
+        Console.WriteLine($"single data: " + dv.ToString());
+    ```
+
+    -   multi
+
+    ```
+        // nodeId 지정
+        List<NodeId> nodeIds = new List<NodeId>();
+        nodeIds.Add(new NodeId("ns=2;s=/Channel/State/acProg"));
+        nodeIds.Add(new NodeId("ns=2;s=/Channel/ProgramInfo/progName"));
+        nodeIds.Add(new NodeId("ns=2;s=/Channel/Spindle/driveLoad"));
+        nodeIds.Add(new NodeId("ns=2;s=/Channel/Spindle/actSpeed"));
+        nodeIds.Add(new NodeId("ns=2;s=/Channel/Spindle/speedOvr"));
+        nodeIds.Add(new NodeId("ns=2;s=/Channel/MachineAxis/feedRateOvr")
+
+        // 파라미터 전달
+        List<DataValue> dataValues = opcUaClient.ReadValues(nodeIds.ToArray()
+
+        // 수집 데이터 출력
+        for (int i = 0; i < dataValues.Count; i++)
+        {
+            Console.WriteLine($"data{i + 1}: " + dataValues[i].ToString());
+        }
+    ```
 
 ## Setup
 
@@ -63,3 +98,4 @@ dotnet publish \
 -   [Create a Windows Service using BackgroundService](https://docs.microsoft.com/ko-kr/dotnet/core/extensions/windows-service)
 -   [dotenv.net](https://github.com/bolorundurowb/dotenv.net)
 -   [Akka.NET](https://getakka.net/)
+-   [OpcUaHelper](https://github.com/dathlin/OpcUaHelper),(https://m.blog.naver.com/yeo2697/222083701071)
