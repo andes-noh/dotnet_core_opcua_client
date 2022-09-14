@@ -4,18 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Configuration;
 using Opc.Ua;
 using Opc.Ua.Client;
 
 public class OpcUaClient
 {
+    public class Props
+    {
+        public string? endpoint { get; init; }
+    }
+
+    private readonly Props _props;
     public Session session;
-    public String endpointURL;
 
     private ApplicationConfiguration config;
-    private MonitoredItem monitoredItem;
-    private Subscription subscription;
 
     // default false
     // private bool useSecurity;
@@ -34,8 +37,18 @@ public class OpcUaClient
     //     set { useSecurity = value; }
     // }
 
-    public OpcUaClient()
+    public static OpcUaClient FromConfig(IConfiguration config)
     {
+        var props = new Props
+        {
+            endpoint = "opc.tcp://" + config["ENDPOINT_URL"] + ":4840"
+        };
+        return new OpcUaClient(props);
+    }
+    public OpcUaClient(Props props)
+    {
+        _props = props;
+        config = CreateOpuaAppConfiguration();
         // var certificateValidator = new CertificateValidator();
         // certificateValidator.CertificateValidation += (sender, eventArgs) =>
         // {
@@ -118,12 +131,11 @@ public class OpcUaClient
 
         // configuration.Validate(ApplicationType.Client);
         // config = configuration;
-        config = CreateOpuaAppConfiguration();
     }
 
-    public async Task ConnectServer(string endpointURL)
+    public async Task ConnectServer()
     {
-        session = await Connect(endpointURL);
+        session = await Connect(_props.endpoint);
     }
 
     private async Task<Session> Connect(string endpointURL)
@@ -183,24 +195,6 @@ public class OpcUaClient
         }
 
         return config;
-    }
-
-    private void OnNotification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
-    {
-        MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
-        foreach (var value in item.DequeueValues())
-        {
-            Console.WriteLine(String.Format("[OPC UA Subscription Message]"));
-        }
-    }
-
-    public void monitoredItem_Notification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
-    {
-        MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
-        if (notification == null)
-        {
-            return;
-        }
     }
 
     public DataValue ReadValue(NodeId nodeId)
