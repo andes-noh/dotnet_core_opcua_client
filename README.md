@@ -98,4 +98,5 @@ dotnet publish \
 -   [Create a Windows Service using BackgroundService](https://docs.microsoft.com/ko-kr/dotnet/core/extensions/windows-service)
 -   [dotenv.net](https://github.com/bolorundurowb/dotenv.net)
 -   [Akka.NET](https://getakka.net/)
--   [OpcUaHelper](https://github.com/dathlin/OpcUaHelper),(https://m.blog.naver.com/yeo2697/222083701071)
+-   [OpcUaHelper](https://github.com/dathlin/OpcUaHelper)
+-   [OpcUaClient](https://m.blog.naver.com/yeo2697/222083701071)
