@@ -8,44 +8,48 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Opc.Ua;
 using Client;
-using System.Security.Cryptography.X509Certificates;
+using HttpClient;
 
 public class Collector : BackgroundService
 {
-    OpcUaClient opcUaClient;
+
     public class Props
     {
-        public string? endpointURL { get; set; }
+        public int cycleTime { get; init; }
     }
     private readonly Props _props;
 
-    public static Collector FromConfig(IConfiguration config)
+    private HttpHelper _httpHelper;
+    private OpcUaClient _opcUaClient;
+
+    public static Collector FromConfig(IConfiguration config, HttpHelper httpHelper, OpcUaClient opcUaClient)
     {
         var props = new Props
         {
-            endpointURL = "opc.tcp://" + config["ENDPOINT_URL"] + ":4840",
+            cycleTime = ushort.Parse(config["CYCLE_TIME"]),
         };
-
-        return new Collector(props);
+        return new Collector(props, httpHelper, opcUaClient);
     }
 
-    public Collector(Props props)
+    public Collector(Props props, HttpHelper httpHelper, OpcUaClient opcUaClient)
     {
         _props = props;
+        _httpHelper = httpHelper;
+        _opcUaClient = opcUaClient;
     }
 
-    public void DataCollector(CancellationToken cancellationToken, string endpoint)
+    public void DataCollector(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                if (!opcUaClient.getConnected)
+                if (!_opcUaClient.getConnected)
                 {
                     try
                     {
                         // 인증 관련 id, password 설정
-                        opcUaClient.UserIdentity = new UserIdentity("OpcUaClient", "12345678");
+                        _opcUaClient.UserIdentity = new UserIdentity("OpcUaClient", "12345678");
 
                         // Anonymous 연결 설정
                         // new UserIdentity( new AnonymousIdentityToken( ) );
@@ -54,26 +58,26 @@ public class Collector : BackgroundService
                         // X509Certificate2 certificate = new X509Certificate2("", "", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
                         // new UserIdentity(certificate);
 
-                        opcUaClient.ConnectServer(endpoint);
+                        _opcUaClient.ConnectServer();
                         Thread.Sleep(5000);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         try
                         {
-                            opcUaClient.setConnected(false);
+                            _opcUaClient.setConnected(false);
                             Thread.Sleep(5000);
                         }
-                        catch (Exception e2)
+                        catch (Exception)
                         {
                             try
                             {
-                                opcUaClient.Disconnect();
+                                _opcUaClient.Disconnect();
                                 Thread.Sleep(5000);
                             }
-                            catch (Exception e3)
+                            catch (Exception)
                             {
-                                opcUaClient.setConnected(false);
+                                _opcUaClient.setConnected(false);
                             }
                         }
                     }
@@ -94,40 +98,40 @@ public class Collector : BackgroundService
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/Spindle/speedOvr"));
                     nodeIds.Add(new NodeId("ns=2;s=/Channel/MachineAxis/feedRateOvr"));
 
-                    List<DataValue> dataValues = opcUaClient.ReadValues(nodeIds.ToArray());
+                    List<DataValue> dataValues = _opcUaClient.ReadValues(nodeIds.ToArray());
 
                     for (int i = 0; i < dataValues.Count; i++)
                     {
                         Console.WriteLine($"data{i + 1}: " + dataValues[i].ToString());
                     }
 
-                    Thread.Sleep(5000);
+                    // 5000ms => 5s
+                    Thread.Sleep(_props.cycleTime * 1000);
                 }
 
             }
             catch (Exception)
             {
-                opcUaClient.Disconnect();
-                opcUaClient.setConnected(false);
+                _opcUaClient.Disconnect();
+                _opcUaClient.setConnected(false);
                 Console.WriteLine("Failed to read value or error connecting to server");
             }
-            // Console.WriteLine($"Sample Project: {text}");
         }
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         // 생성자
-        opcUaClient = new OpcUaClient();
-        Task.Run(() => DataCollector(stoppingToken, _props.endpointURL));
+        // _opcUaClient = new OpcUaClient();
+        Task.Run(() => DataCollector(stoppingToken));
         return Task.CompletedTask;
     }
 
     // BackgroundService는 생략가능
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        opcUaClient.Disconnect();
-        opcUaClient.setConnected(false);
+        _opcUaClient.Disconnect();
+        _opcUaClient.setConnected(false);
         return Task.CompletedTask;
     }
 }
