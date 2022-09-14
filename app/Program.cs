@@ -31,13 +31,13 @@ using IHost host = Host
             // .AddSingleton<>()
             .AddHostedService<Collector>(provider =>
             {
-                var text = "";
+                var endpointURL = "";
                 if (args.Length > 0)
                 {
-                    text = args[0];
+                    endpointURL = args[0];
                 }
 
-                if (string.IsNullOrEmpty(text))
+                if (string.IsNullOrEmpty(endpointURL))
                 {
                     var config = provider.GetRequiredService<IConfiguration>();
                     return Collector.FromConfig(config);
@@ -46,7 +46,7 @@ using IHost host = Host
                 {
                     var props = new Collector.Props
                     {
-                        text = text,
+                        endpointURL = endpointURL,
                     };
                     return new Collector(props);
                 }
