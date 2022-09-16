@@ -12,6 +12,7 @@ DotEnv.Load();
 
 using IHost host = Host
     .CreateDefaultBuilder(args)
+    .UseWindowsService()
     .ConfigureServices((context, services) =>
     {
         services.AddLogging();
@@ -90,7 +91,7 @@ using IHost host = Host
                 }
             });
     })
-    .UseConsoleLifetime()
+    // .UseConsoleLifetime()
     .Build();
 
 await host.RunAsync();
